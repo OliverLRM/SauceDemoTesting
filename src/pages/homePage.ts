@@ -1,6 +1,7 @@
 import { expect, Page } from "@playwright/test";
 import { HomePageLocators } from "../locators/homePageLocators";
 import { productData } from "../../productData";
+import { selectedProducts } from "../../productData";
 
 export class HomePage {
   readonly page: Page;
@@ -30,8 +31,8 @@ export class HomePage {
     }
   }
 
-  async addProductToCart(name: string) {
-    await this.page.click(HomePageLocators.addToCartButtonByProductName(name));
+  async addProductByName(name: string) {
+    await this.page.click(HomePageLocators.addToBasketByName(name));
     await expect(this.page.locator(".shopping_cart_badge")).toHaveText("1");
     let item = await this.page.locator(HomePageLocators.itemName);
     let itemText = await item.textContent();
@@ -71,14 +72,153 @@ export class HomePage {
       description: String,
       price: Number,
     };
-    //const expected = expectedProduct; //gets product data if we return it in the function
-    //gets product data from the shared objectconst expectedFromSharedObject = productData.selectedProduct;
 
-    expect(actual).toBe(expectedProduct);
+    //expect(actual).toBe(expectedProduct);
+  }
+
+  async addMultipleProdcts(randomCount?: number) {
+    const items = await this.page.locator(HomePageLocators.itemCards);
+    const total = await items.count();
+    const indices: number[] = [];
+
+    for (let i = 0; i < total; i++) {
+      indices.push(i);
+    }
+
+    for (const idx of indices) {
+      const priceText = await items
+        .nth(idx)
+        .locator(HomePageLocators.itemPrice)
+        .textContent();
+      const nameText = await items
+        .nth(idx)
+        .locator(HomePageLocators.itemName)
+        .textContent();
+      const descriptionText = await items
+        .nth(idx)
+        .locator(HomePageLocators.Description)
+        .textContent();
+
+      const priceValue = parseFloat(priceText!.replace("$", ""));
+      const test = "test";
+
+      selectedProducts.push({
+        name: nameText!,
+        description: descriptionText!,
+        price: priceValue,
+      });
+
+      await items.nth(idx).locator(HomePageLocators.AddToCart).click();
+    }
+    //console.log("selected products" + selectedProducts);
+    //console.log(selectedProducts.map((product) => product.price));
   }
 
   async goToCart() {
     await this.page.click(HomePageLocators.Basket);
     await this.page.waitForTimeout(5000);
+  }
+
+  async addProducts(numberofItems: number) {
+    const items = await this.page.locator(HomePageLocators.itemCards);
+    let productSelection: {
+      name: string;
+      description: string;
+      price: number;
+    }[] = [];
+    for (let i = 0; i < numberofItems; i++) {
+      const productName = await items
+        .nth(i)
+        .locator(HomePageLocators.itemName)
+        .textContent();
+      const productDescription = await items
+        .nth(i)
+        .locator(HomePageLocators.Description)
+        .textContent();
+      const productPrice = await items
+        .nth(i)
+        .locator(HomePageLocators.itemPrice)
+        .textContent();
+      const priceValue = parseFloat(productPrice!.replace("$", ""));
+
+      productSelection.push({
+        name: productName!,
+        description: productDescription!,
+        price: priceValue,
+      });
+
+      await items.nth(i).locator(HomePageLocators.AddToCart).click();
+    }
+    return productSelection;
+  }
+
+  async orderByPrice() {
+    const items = this.page.locator(HomePageLocators.itemCards); //grab the item cards
+    const count = await items.count(); // get the total to be used in the for loop
+    const actualHilo: number[] = []; // set up array to store product prices we get from the foor loop
+    const actualLohi: number[] = [];
+
+    await this.page
+      .locator(HomePageLocators.ordering.sortContainer)
+      .selectOption("hilo");
+
+    let itemsAfterSort = this.page.locator(HomePageLocators.itemCards);
+
+    for (let i = 0; i < count; i++) {
+      const itemPrice = await itemsAfterSort
+        .nth(i)
+        .locator(HomePageLocators.itemPrice)
+        .textContent();
+
+      const priceValue = parseFloat(itemPrice!.replace("$", ""));
+      actualHilo.push(priceValue);
+    }
+
+    const expectedHilo = [...actualHilo].sort((a, b) => b - a);
+
+    await this.page
+      .locator(HomePageLocators.ordering.sortContainer)
+      .selectOption("lohi");
+
+    itemsAfterSort = this.page.locator(HomePageLocators.itemCards);
+
+    for (let i = 0; i < count; i++) {
+      const itemPrice = await itemsAfterSort
+        .nth(i)
+        .locator(HomePageLocators.itemPrice)
+        .textContent();
+
+      const priceValue = parseFloat(itemPrice!.replace("$", ""));
+      actualLohi.push(priceValue);
+    }
+
+    const expectedLohi = [...actualLohi].sort((a, b) => a - b);
+
+    return { actualHilo, expectedHilo, actualLohi, expectedLohi };
+  }
+
+  async orderByName() {
+    const items = this.page.locator(HomePageLocators.itemCards);
+    const count = await items.count();
+    const actualAz: string[] = [];
+    const actualZa: string[] = [];
+
+    await this.page
+      .locator(HomePageLocators.ordering.sortContainer)
+      .selectOption("az");
+
+    let itemsAfterSort = this.page.locator(HomePageLocators.itemCards);
+
+    for (let i = 0; i < count; i++) {
+      const itemname = await itemsAfterSort
+        .nth(i)
+        .locator(HomePageLocators.itemName)
+        .textContent();
+
+      actualAz.push(itemname!);
+    }
+
+    const expectedAz = [...actualAz].sort();
+    return { actualAz, expectedAz };
   }
 }

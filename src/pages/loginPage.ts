@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { expect, Page } from "@playwright/test";
 import { LoginPageLocators } from "../locators/loginPageLocators";
 
 export class LoginPage {
@@ -20,6 +20,7 @@ export class LoginPage {
     await this.page.fill(LoginPageLocators.usernameField, username);
     await this.page.fill(LoginPageLocators.passwordField, password);
     await this.page.click(LoginPageLocators.submitButton);
+
     await this.page.waitForTimeout(2000); // 2 seconds
   }
 }
