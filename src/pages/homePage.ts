@@ -66,7 +66,7 @@ export class HomePage {
     return productData;
   }
 
-  async basketItems(expectedProduct) {
+  async basketItems() {
     const actual = {
       name: String,
       description: String,
@@ -116,7 +116,7 @@ export class HomePage {
 
   async goToCart() {
     await this.page.click(HomePageLocators.Basket);
-    await this.page.waitForTimeout(5000);
+    //await this.page.waitForTimeout(5000);
   }
 
   async addProducts(numberofItems: number) {

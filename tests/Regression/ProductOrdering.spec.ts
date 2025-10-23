@@ -20,7 +20,7 @@ test.describe("Validate product ordering", () => {
   });
 });
 
-test.only("Validate users can order by name", async ({ page }) => {
+test("Validate users can order by name", async ({ page }) => {
   const loginPage = new LoginPage(page);
   const homePage = new HomePage(page);
 
@@ -29,7 +29,4 @@ test.only("Validate users can order by name", async ({ page }) => {
 
   const { actualAz, expectedAz } = await homePage.orderByName();
   expect(actualAz).toEqual(expectedAz);
-
-  console.log(actualAz);
-  console.log(expectedAz);
 });

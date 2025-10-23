@@ -12,15 +12,11 @@ export class LoginPage {
     await this.page.goto("https://www.saucedemo.com/v1/");
   }
 
-  //#login-button'         // by id
-  //.btn_action'           // by class
-  //'input[type="submit"]'  // by attribute
-
   async login(username: string, password: string) {
     await this.page.fill(LoginPageLocators.usernameField, username);
     await this.page.fill(LoginPageLocators.passwordField, password);
     await this.page.click(LoginPageLocators.submitButton);
 
-    await this.page.waitForTimeout(2000); // 2 seconds
+    //await this.page.waitForTimeout(2000);
   }
 }
