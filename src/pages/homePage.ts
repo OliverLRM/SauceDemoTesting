@@ -155,7 +155,7 @@ export class HomePage {
   async orderByPrice() {
     const items = this.page.locator(HomePageLocators.itemCards); //grab the item cards
     const count = await items.count(); // get the total to be used in the for loop
-    const actualHilo: number[] = []; // set up array to store product prices we get from the foor loop
+    const actualHilo: number[] = []; // set up array to store product prices we get from the for loop
     const actualLohi: number[] = [];
 
     await this.page

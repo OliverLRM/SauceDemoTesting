@@ -96,7 +96,7 @@ export class BasketPage {
     const total = parseFloat(totalText!.replace(/[^\d.]/g, ""));
 
     await this.page.locator(BasketPageLocators.finishBtn).click();
-    await this.page.waitForTimeout(5000);
+    //await this.page.waitForTimeout(5000);
 
     return { productDetails: productsOverview, subTotal, tax, total };
   }
