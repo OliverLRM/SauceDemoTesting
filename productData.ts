@@ -1,4 +1,4 @@
-// productStore.ts
+// productStore
 
 export type Product = {
   name: string;
