@@ -13,6 +13,5 @@ Small demo project showing end-to-end tests built with Playwright in TypeScript.
 bash
 npm install
 npx playwright test
-npx playwright show-report
 
 All tests are for the SauceDemo testing site.
